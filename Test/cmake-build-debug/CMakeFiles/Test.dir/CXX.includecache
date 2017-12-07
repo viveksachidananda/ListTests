@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/cygdrive/e/CodingGame/Test/List.hpp
+cstddef
+-
+iostream
+-
+
+/cygdrive/e/CodingGame/Test/main.cpp
+algorithm
+-
+iostream
+-
+memory
+-
+regex
+-
+string
+-
+vector
+-
+List.hpp
+/cygdrive/e/CodingGame/Test/List.hpp
+

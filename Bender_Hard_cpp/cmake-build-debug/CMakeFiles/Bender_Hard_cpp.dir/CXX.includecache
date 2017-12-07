@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/cygdrive/e/CodingGame/Bender_Hard_cpp/main.cpp
+algorithm
+-
+iostream
+-
+memory
+-
+regex
+-
+string
+-
+vector
+-
+
