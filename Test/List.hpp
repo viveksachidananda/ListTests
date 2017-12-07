@@ -8,6 +8,15 @@
 #include <cstddef>
 #include <iostream>
 #include <string>
+#include "exception"
+
+class LLUnsupportedOperationException : public std::exception
+{
+    virtual const char* what() const throw()
+    {
+        return "Unsupported operation has been performed";
+    }
+};
 
 template<typename T>
 class List {
@@ -33,7 +42,7 @@ public:
      * Acts like a Base functor class that needs to be passed for filter
      */
     struct BaseFunctor {
-        virtual bool operator()(const Node* iNode) const {
+        virtual bool operator()(const Node *iNode) const {
             return true;
         }
     };
@@ -42,7 +51,7 @@ public:
         ModPredicate(const size_t iInt, const size_t iModEqual) : _int(iInt), _modEqual(iModEqual) {
         }
 
-        bool operator()(const Node* iNode) const {
+        bool operator()(const Node *iNode) const {
             if (iNode != nullptr)
                 return (iNode->_value % _int) == _modEqual;
 
@@ -105,9 +114,8 @@ private:
 template<typename T>
 void List<T>::print() {
 
-    if (_head == nullptr)
-    {
-        std::cout<< "empty List Nothing to print" << std::endl;
+    if (_head == nullptr) {
+        std::cout << "empty List Nothing to print" << std::endl;
         return;
     }
 
@@ -115,15 +123,36 @@ void List<T>::print() {
 
     Node *aCurr = _head;
 
-    while(aCurr!= nullptr)
-    {
+    while (aCurr != nullptr) {
         aString.append(std::to_string(aCurr->_value).append(","));
         aCurr = aCurr->_link;
     }
 
     aString.pop_back();
 
-    std::cout<< "Contents of List : " << aString << std::endl;
+    std::cout << "Contents of List : " << aString << std::endl;
+}
+
+template<>
+void List<std::string>::print() {
+
+    if (_head == nullptr) {
+        std::cout << "empty List Nothing to print" << std::endl;
+        return;
+    }
+
+    std::string aString = "";
+
+    Node *aCurr = _head;
+
+    while (aCurr != nullptr) {
+        aString.append(aCurr->_value.append(","));
+        aCurr = aCurr->_link;
+    }
+
+    aString.pop_back();
+
+    std::cout << "Contents of List : " << aString << std::endl;
 }
 
 //template<typename T>
@@ -160,23 +189,20 @@ void List<T>::filter(const BaseFunctor *iPredicate) {
     Node *aCurrent = _head;
     Node *aPrevious = nullptr;
 
-    while(aCurrent!= nullptr)
-    {
+    while (aCurrent != nullptr) {
         // If predicate fails then we need to delete the node
-        if (!iPredicate->operator()(aCurrent))
-        {
-            if (aCurrent == _head)
-            {
+        if (!iPredicate->operator()(aCurrent)) {
+            if (aCurrent == _head) {
                 _head = aCurrent->_link;
                 delete aCurrent;
                 aCurrent = _head;
                 aPrevious = aCurrent;
-            } else{
+            } else {
                 aPrevious->_link = aCurrent->_link;
                 delete aCurrent;
                 aCurrent = aPrevious->_link;
             }
-        } else{
+        } else {
             aPrevious = aCurrent;
             aCurrent = aCurrent->_link;
         }
@@ -185,6 +211,11 @@ void List<T>::filter(const BaseFunctor *iPredicate) {
 
 template<typename T>
 void List<T>::modFilter(const size_t iInt, const size_t iModEqualTo) {
+    throw LLUnsupportedOperationException();
+}
+
+template<>
+void List<size_t>::modFilter(const size_t iInt, const size_t iModEqualTo) {
     ModPredicate aModPredicate(iInt, iModEqualTo);
 
     filter(&aModPredicate);

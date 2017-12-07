@@ -28,4 +28,9 @@ int main() {
 
     aIntList.modFilter(2, 0);
     aIntList.print();
+
+    cout<< "---------- Now string the list -----" << endl;
+    List<string> aStringList;
+    aStringList.push_back("a");
+    aStringList.print();
 }
