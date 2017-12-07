@@ -17,7 +17,7 @@ int main() {
 
 //    aIntList.push_back(size_t(1));
 //    aIntList.push_back(size_t(1));
-//    aIntList.push_back(size_t(1));
+    aIntList.push_back(size_t(2));
     aIntList.push_back(size_t(1));
 
     aIntList.print();

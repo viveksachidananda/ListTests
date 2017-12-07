@@ -162,6 +162,7 @@ void List<T>::filter(const BaseFunctor *iPredicate) {
 
     while(aCurrent!= nullptr)
     {
+        // If predicate fails then we need to delete the node
         if (!iPredicate->operator()(aCurrent))
         {
             if (aCurrent == _head)
