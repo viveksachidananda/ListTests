@@ -15,16 +15,17 @@ using namespace std;
 int main() {
     List<size_t> aIntList;
 
+//    aIntList.push_back(size_t(1));
+//    aIntList.push_back(size_t(1));
+//    aIntList.push_back(size_t(1));
     aIntList.push_back(size_t(1));
-    aIntList.push_back(size_t(2));
-    aIntList.push_back(size_t(4));
-    aIntList.push_back(size_t(3));
 
-    cout << "At before : " << aIntList.at(2) <<  endl;
-
+    aIntList.print();
     aIntList.reverse();
+    aIntList.print();
 
-    cout << "after reverse At : " << aIntList.at(2) <<  endl;
+    cout<< "---------- Now filter the list -----" << endl;
 
-
+    aIntList.modFilter(2, 0);
+    aIntList.print();
 }
