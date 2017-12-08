@@ -10,18 +10,14 @@
 #include <string>
 #include "exception"
 
-class LLUnsupportedOperationException : public std::exception
-{
-    virtual const char* what() const throw()
-    {
+class LLUnsupportedOperationException : public std::exception {
+    virtual const char *what() const throw() {
         return "Unsupported operation has been performed";
     }
 };
 
-class LLOutOfRange : public std::exception
-{
-    virtual const char* what() const throw()
-    {
+class LLOutOfRange : public std::exception {
+    virtual const char *what() const throw() {
         return "Out of range Error";
     }
 };
@@ -99,6 +95,9 @@ public:
 
     void modFilter(const size_t iInt, const size_t iModEqualTo);
 
+    template<typename ReturnListType>
+    void map(ReturnListType (*func)(T &), List<ReturnListType> &ioList);
+
     // capacity:
     size_t size() const { return _size; }
 
@@ -111,6 +110,9 @@ private:
     void filter(const BaseFunctor *iPredicate);
 
     void reverseUtil(Node *iCurr, Node *iPrev, Node **iHead);
+
+    template<typename ReturnListType>
+    void mapUtil(Node *iCurr, ReturnListType (*func)(T &), List<ReturnListType> &ioList);
 
     Node *_head, *_tail;
     size_t _size;
@@ -135,7 +137,7 @@ void List<T>::print() {
     }
 
     aString.pop_back();
-
+    std::cout << "List size : " << _size << std::endl;
     std::cout << "Contents of List : " << aString << std::endl;
 }
 
@@ -152,13 +154,34 @@ void List<std::string>::print() {
     Node *aCurr = _head;
 
     while (aCurr != nullptr) {
-        aString.append(aCurr->_value.append(","));
+        aString.append(aCurr->_value);
+        aString.append(",");
         aCurr = aCurr->_link;
     }
 
     aString.pop_back();
-
+    std::cout << "List size : " << _size << std::endl;
     std::cout << "Contents of List : " << aString << std::endl;
+}
+
+template<typename T>
+template<typename ReturnListType>
+void List<T>::map(ReturnListType (*func)(T &), List<ReturnListType> &ioList) {
+    if (_head == nullptr)
+        return;
+
+    Node *aCurr = _head;
+    mapUtil(aCurr, func, ioList);
+}
+
+template<typename T>
+template<typename ReturnListType>
+void List<T>::mapUtil(Node *iCurr, ReturnListType (*func)(T &), List<ReturnListType> &ioList) {
+    if (iCurr == nullptr)
+        return;
+
+    ioList.push_back(func(iCurr->_value));
+    mapUtil(iCurr->_link, func, ioList);
 }
 
 template<typename T>
@@ -267,6 +290,7 @@ void List<T>::push_back(const T &iValue) {
         _tail = _head = aNewNode;
         // Otherwise, insert newNode at end.
     } else {
+        std::cout << "Tail " << _tail->_value << " tail->link : " << _tail->_link << std::endl;
         _tail->_link = aNewNode;
         _tail = aNewNode;
     }
@@ -367,6 +391,9 @@ template<typename T>
 void List<T>::reverse() {
     if (_head == nullptr)
         return;
+
+    // Initialize the tail to head
+    _tail = _head;
 
     reverseUtil(_head, NULL, &_head);
 }
