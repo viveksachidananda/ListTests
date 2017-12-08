@@ -32,5 +32,5 @@ int main() {
     cout<< "---------- Now string the list -----" << endl;
     List<string> aStringList;
     aStringList.push_back("a");
-    aStringList.print();
+    aStringList.print(); // Test the git from CLION
 }
