@@ -8,25 +8,37 @@
 
 using namespace std;
 
-size_t function_length(string& iString)
-{
-    return iString.length();
-}
-
-string function_convert_to_caps(string& iString)
-{
-    string aToReturn;
-
-    for(int i = 0; i < iString.size(); i++) {
-        aToReturn.push_back(toupper(iString.at(i)));
+// private namespace for filter functions
+namespace {
+    // Returns the length of the given string
+    size_t function_length(string &iString) {
+        return iString.length();
     }
 
-    return aToReturn;
-};
+    // Converts the given string to uppercase
+    string function_convert_to_caps(string &iString) {
+        string aToReturn;
 
-string function_return_same(string& iString)
-{
-    return iString;
+        for (int i = 0; i < iString.size(); i++) {
+            aToReturn.push_back(toupper(iString.at(i)));
+        }
+
+        return aToReturn;
+    };
+
+    string function_return_same(string &iString) {
+        return iString;
+    }
+
+    void function_concat(string& iData, string& ioData)
+    {
+        ioData += iData;
+    }
+
+    void function_sum(string& iData, size_t& ioData)
+    {
+        ioData += iData.length();
+    }
 }
 
 /**
@@ -70,8 +82,11 @@ int main() {
     aStringList.map(function_convert_to_caps, aMappedCaps);
     aMappedCaps.print();
 
-    cout << "fold left : " << aStringList.foldLeft(function_length) << endl;
-    cout << "fold left same : " << aStringList.foldLeft(function_return_same) << endl;
+    size_t aInitialSum = 0;
+    string aConcatanatedString = "";
+
+    cout << "fold left : " << aStringList.foldLeft(aInitialSum, function_sum) << endl;
+    cout << "fold left same : " << aStringList.foldLeft(aConcatanatedString, function_concat) << endl;
 
 //    try {
 //        aStringList.modFilter(1, 3);

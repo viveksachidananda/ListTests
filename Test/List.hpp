@@ -99,7 +99,7 @@ public:
     void map(ReturnListType (*func)(T &), List<ReturnListType> &ioList);
 
     template<typename ReturnListType>
-    ReturnListType foldLeft(ReturnListType (*func)(T &));
+    ReturnListType foldLeft(ReturnListType& ioReturn, void (*func)(T &, ReturnListType&));
 
     // capacity:
     size_t size() const { return _size; }
@@ -118,7 +118,7 @@ private:
     void mapUtil(Node *iCurr, ReturnListType (*func)(T &), List<ReturnListType> &ioList);
 
     template<typename ReturnListType>
-    ReturnListType foldLeftUtil(Node* iCurr, ReturnListType (*func)(T &), ReturnListType iReturnData);
+    ReturnListType foldLeftUtil(Node* iCurr, void (*func)(T &, ReturnListType&), ReturnListType& iReturnData);
 
     Node *_head, *_tail;
     size_t _size;
@@ -192,24 +192,24 @@ void List<T>::mapUtil(Node *iCurr, ReturnListType (*func)(T &), List<ReturnListT
 
 template<typename T>
 template<typename ReturnListType>
-ReturnListType List<T>::foldLeft(ReturnListType (*func)(T &))
+ReturnListType List<T>::foldLeft(ReturnListType& ioReturn, void (*func)(T &, ReturnListType&))
 {
-    ReturnListType aReturn = ReturnListType();
-
     if(_head == nullptr)
-        return aReturn;
+        return ioReturn;
 
-    return foldLeftUtil(_head, func, aReturn);
+    return foldLeftUtil(_head, func, ioReturn);
 }
 
 template<typename T>
 template<typename ReturnListType>
-ReturnListType List<T>::foldLeftUtil(Node* iCurr, ReturnListType (*func)(T &), ReturnListType iReturnData)
+ReturnListType List<T>::foldLeftUtil(Node* iCurr, void (*func)(T&, ReturnListType&), ReturnListType& iReturnData)
 {
     if(iCurr == nullptr)
         return iReturnData;
 
-    return foldLeftUtil(iCurr->_link, func, (iReturnData + func(iCurr->_value)));
+    func(iCurr->_value, iReturnData);
+
+    return foldLeftUtil(iCurr->_link, func, iReturnData);
 }
 
 template<typename T>
