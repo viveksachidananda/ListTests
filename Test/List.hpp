@@ -1,5 +1,5 @@
 //
-// Created by Meghana on 06-12-2017.
+// Created by Vivek on 06-12-2017.
 //
 
 #ifndef TEST_LIST_HPP
@@ -28,11 +28,11 @@ private:
     struct Node {
         Node() : _link(nullptr), _value(T()) {}
 
-        Node(const T &val) : _link(nullptr), _value(val) {
+        explicit Node(const T &val) : _link(nullptr), _value(val) {
             std::cout << "creating a new node : " << _value << " _link: " << _link << std::endl;
         }
 
-        Node(const Node *node) : _link(node->_link), _value(node->_value) {
+        explicit Node(const Node *node) : _link(node->_link), _value(node->_value) {
             std::cout << "ERRRRR----creating a new node : " << _value << " _link: " << _link << std::endl;
         }
 
@@ -69,9 +69,9 @@ public:
     // constructors
     List() : _head(nullptr), _size(0) {}
 
-    List(const size_t iSize);
+    explicit List(const size_t iSize);
 
-    List(const List &iList);
+    explicit List(const List &iList);
 
     ~List();
 
@@ -155,7 +155,7 @@ void List<std::string>::print() {
         return;
     }
 
-    std::string aString = "";
+    std::string aString;
 
     Node *aCurr = _head;
 
@@ -254,7 +254,7 @@ void List<size_t>::modFilter(const size_t iInt, const size_t iModEqualTo) {
 }
 
 template<typename T>
-List<T>::List(size_t const iSize) : _head(nullptr), _tail(nullptr), _size(iSize) {
+List<T>::List(const size_t iSize) : _head(nullptr), _tail(nullptr), _size(iSize) {
     Node aHead;
     Node *aNodePtr = &aHead;
     for (size_t i = 0; i < _size; i++) {
