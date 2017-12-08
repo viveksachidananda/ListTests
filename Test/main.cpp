@@ -24,6 +24,11 @@ string function_convert_to_caps(string& iString)
     return aToReturn;
 };
 
+string function_return_same(string& iString)
+{
+    return iString;
+}
+
 /**
  * Auto-generated code below aims at helping you parse
  * the standard input according to the problem statement.
@@ -64,6 +69,10 @@ int main() {
     List<string> aMappedCaps;
     aStringList.map(function_convert_to_caps, aMappedCaps);
     aMappedCaps.print();
+
+    cout << "fold left : " << aStringList.foldLeft(function_length) << endl;
+    cout << "fold left same : " << aStringList.foldLeft(function_return_same) << endl;
+
 //    try {
 //        aStringList.modFilter(1, 3);
 //    }
