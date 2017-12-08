@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "List.hpp"
+
 using namespace std;
 
 
@@ -24,13 +25,21 @@ int main() {
     aIntList.reverse();
     aIntList.print();
 
-    cout<< "---------- Now filter the list -----" << endl;
+    cout << "---------- Now filter the list -----" << endl;
 
     aIntList.modFilter(2, 0);
     aIntList.print();
 
-    cout<< "---------- Now string the list -----" << endl;
+    cout << "---------- Now string the list -----" << endl;
     List<string> aStringList;
     aStringList.push_back("a");
-    aStringList.print(); // Test the git from CLION
+    aStringList.print();
+
+    try {
+        aStringList.modFilter(1, 3);
+    }
+    catch (exception &iExc) {
+        std::cout << "What : " << iExc.what() << endl;
+    }
+
 }

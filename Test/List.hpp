@@ -18,6 +18,14 @@ class LLUnsupportedOperationException : public std::exception
     }
 };
 
+class LLOutOfRange : public std::exception
+{
+    virtual const char* what() const throw()
+    {
+        return "Out of range Error";
+    }
+};
+
 template<typename T>
 class List {
 private:
@@ -104,8 +112,6 @@ private:
 
     void reverseUtil(Node *iCurr, Node *iPrev, Node **iHead);
 
-    void subError() const; // Handles memory subscripts out of range
-
     Node *_head, *_tail;
     size_t _size;
 };
@@ -154,32 +160,6 @@ void List<std::string>::print() {
 
     std::cout << "Contents of List : " << aString << std::endl;
 }
-
-//template<typename T>
-//void List<T>::filter(const BaseFunctor *iPredicate) {
-//    if (_head == nullptr)
-//        return;
-//
-//    Node *aTailCopy = _tail;
-//    Node *aCurr = _head;
-//
-//    while (aCurr != aTailCopy->_link) {
-//        if (iPredicate->operator()(*aCurr)) {
-//            this->push_back(aCurr->_value);
-//        }
-//
-//        if (aCurr->_link == nullptr)
-//            std::cout << "----ERROR----" << std::endl;
-//
-//        aCurr = aCurr->_link;
-//
-//        std::cout << "aCurr is now : " << aCurr->_value << std::endl;
-//        std::cout << "deleting the : _head : " << _head->_value << std::endl;
-//
-//        delete _head;
-//        _head = aCurr;
-//    }
-//}
 
 template<typename T>
 void List<T>::filter(const BaseFunctor *iPredicate) {
@@ -264,7 +244,7 @@ template<typename T>
 const T &List<T>::at(const size_t iPos) const {
     Node *aNodePtr = _head;
     if (iPos < 0 || iPos >= this->size()) {
-        subError();
+        throw LLOutOfRange();
     } else {
 
         for (size_t i = 0; i < iPos; i++) {
@@ -290,15 +270,6 @@ void List<T>::push_back(const T &iValue) {
         _tail->_link = aNewNode;
         _tail = aNewNode;
     }
-//    else {
-//        Node* nodePtr = _head;
-//        // Go to the last node in the list.
-//        while (nodePtr->_link) {
-//            nodePtr = nodePtr->_link;
-//        }
-//        // Insert newNode as the last node.
-//        nodePtr->_link = newNode;
-//    }
     ++_size;
 }
 
@@ -331,7 +302,7 @@ void List<T>::pop_back() {
 template<typename T>
 void List<T>::insert(const size_t iPos, const T &iValue) {
     if (iPos > _size) {
-        subError();
+        throw LLOutOfRange();
     }
 
     Node *aNewNode = new Node(iValue);
@@ -364,7 +335,7 @@ void List<T>::insert(const size_t iPos, const T &iValue) {
 template<typename T>
 void List<T>::erase(const size_t iPos) {
     if (_size <= iPos || _head == nullptr) {
-        subError();
+        throw LLOutOfRange();
     }
     Node *aNodePtr = _head;
     Node *aPrevNode = nullptr;
@@ -388,12 +359,6 @@ void List<T>::erase(const size_t iPos) {
         delete aNodePtr;
     }
     --_size;
-}
-
-template<typename T>
-void List<T>::subError() const {
-    std::cout << "ERROR: Subscript out of range.\n";
-    exit(EXIT_FAILURE);
 }
 
 // This function mainly calls reverseUtil()
