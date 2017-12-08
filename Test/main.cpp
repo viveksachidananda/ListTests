@@ -11,24 +11,19 @@ using namespace std;
 // private namespace for filter functions
 namespace {
     // Returns the length of the given string
-    size_t function_length(string &iString) {
-        return iString.length();
+    void function_length(string &iString, size_t& oData) {
+        oData = 0;
+        oData = iString.length();
     }
 
     // Converts the given string to uppercase
-    string function_convert_to_caps(string &iString) {
-        string aToReturn;
+    void function_convert_to_caps(string &iString, string& oData) {
+        oData = "";
 
         for (int i = 0; i < iString.size(); i++) {
-            aToReturn.push_back(toupper(iString.at(i)));
+            oData.push_back(toupper(iString.at(i)));
         }
-
-        return aToReturn;
     };
-
-    string function_return_same(string &iString) {
-        return iString;
-    }
 
     void function_concat(string& iData, string& ioData)
     {
