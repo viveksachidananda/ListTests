@@ -31,7 +31,7 @@ namespace {
         ioData += iData;
     }
 
-    void function_sum(string &iData, size_t &ioData) {
+    void function_add_length(string &iData, size_t &ioData) {
         ioData += iData.length();
     }
 
@@ -65,39 +65,6 @@ namespace {
  * the standard input according to the problem statement.
  **/
 int main() {
-
-    List<string> aStringList;
-    string aPrintString;
-
-    aStringList.push_back("Kimi");
-
-    cout << "---------- Now Map operation on string with length  -----" << endl;
-    List<size_t> aMappedLLSize;
-    aStringList.push_back("Vivek");
-    aStringList.print(aPrintString);
-    cout << "List : " << aPrintString << endl;
-    aStringList.map(function_length, aMappedLLSize);
-    aMappedLLSize.print(aPrintString);
-    cout << "List : " << aPrintString << endl;
-    cout << "---------- Now Map operation on string with CAPS  -----" << endl;
-    List<string> aMappedCaps;
-    aStringList.map(function_convert_to_caps, aMappedCaps);
-    aMappedCaps.print(aPrintString);
-    cout << "List : " << aPrintString << endl;
-
-    size_t aInitialSum = 0;
-    string aConcatanatedString = "";
-
-    cout << "fold left : " << aStringList.foldLeft(aInitialSum, function_sum) << endl;
-    cout << "fold left same : " << aStringList.foldLeft(aConcatanatedString, function_concat) << endl;
-
-//    try {
-//        aStringList.modFilter(1, 3);
-//    }
-//    catch (exception &iExc) {
-//        std::cout << "What : " << iExc.what() << endl;
-//    }
-
     // UT - for size
     try {
         List<size_t> aIntList;
@@ -308,7 +275,6 @@ int main() {
                 assertEqual<string>("2", aResultStr);
                 assertEqual<size_t>(1, aListInt.size());
 
-                // Check for head and tail properties
                 // Check for tail and head member properties work fine
                 {
                     if (aListInt._head != nullptr)
@@ -316,13 +282,184 @@ int main() {
                     else
                         throw runtime_error("Head is null");
 
-                    if (aListInt._tail == nullptr or (aListInt._tail and aListInt._tail->_link != nullptr))
+                    if (aListInt._tail == nullptr) {
                         throw runtime_error("Tail is null");
+                    } else {
+                        assertEqual<size_t>(2, aListInt._tail->_value);
+
+                        if (aListInt._tail->_link != nullptr)
+                            throw runtime_error("Tail link not null");
+                    }
                 }
+            }
+
+            // modFilter on String
+            {
+                List<string> aListString;
+                aListString.push_back("1");
+
+                // test X mod 2 == 0
+                bool anException = false;
+
+                try {
+                    aListString.modFilter(2, 0);
+                }
+                catch (exceptions::LLUnsupportedOperationException &iExc) {
+                    anException = true;
+                }
+
+                if (!anException)
+                    throw runtime_error("Unsupported type exception not thrown");
+
+                aListString.print(aResultStr);
+                assertEqual<string>("1", aResultStr);
+                assertEqual<size_t>(1, aListString.size());
             }
         }
     }
     catch (exception &iExc) {
         cout << "Filter exception, Reason : " << iExc.what() << endl;
+    }
+
+    // UT - Map operations
+    try {
+        // Nominal Map case
+        {
+            // Length
+            {
+                List<string> aStringList;
+                List<size_t> aMappedLenghtList;
+
+                string aResultStr;
+
+                aStringList.push_back("ABC");
+                aStringList.push_back("BCDE");
+                aStringList.push_back("CDEFG");
+
+                aStringList.map(function_length, aMappedLenghtList);
+
+                aMappedLenghtList.print(aResultStr);
+                assertEqual<string>("3,4,5", aResultStr);
+            }
+
+            //To uppercase
+            {
+                List<string> aStringList;
+                List<string> aMappedResultList;
+
+                string aResultStr;
+
+                aStringList.push_back("123");
+                aStringList.push_back("abcd");
+                aStringList.push_back("hi29");
+
+                aStringList.map(function_convert_to_caps, aMappedResultList);
+
+                aMappedResultList.print(aResultStr);
+                assertEqual<string>("123,ABCD,HI29", aResultStr);
+            }
+        }
+
+        // Use of function_length on empty list
+        {
+            List<string> aStringList;
+            List<size_t> aMappedLenghtList;
+
+            string aResultStr;
+
+            bool anExceptionThrown = false;
+            try {
+                aStringList.map(function_length, aMappedLenghtList);
+            } catch (...) {
+                anExceptionThrown = true;
+            }
+
+            if (anExceptionThrown)
+                throw runtime_error("Exception thrown by Map");
+
+            aMappedLenghtList.print(aResultStr);
+            assertEqual<string>("Empty List", aResultStr);
+        }
+    }
+    catch (exception &iExc) {
+        cout << "Map exception, Reason : " << iExc.what() << endl;
+    }
+
+    // UT - Foldleft operations
+    try {
+        // Nominal Foldleft case
+        {
+            // Length
+            {
+                List<string> aStringList;
+                size_t aTotalLength = 0;
+
+                string aResultStr;
+
+                aStringList.push_back("ABC");
+                aStringList.push_back("BCDE");
+                aStringList.push_back("CDEFG");
+
+                aStringList.foldLeft(aTotalLength, function_add_length);
+
+                assertEqual<size_t>(12, aTotalLength);
+
+                // Initialize the total length
+                aTotalLength = 3;
+                aStringList.foldLeft(aTotalLength, function_add_length);
+
+                assertEqual<size_t>(15, aTotalLength);
+            }
+
+            //To concatanate
+            {
+                List<string> aStringList;
+                string aResultString;
+
+                aStringList.push_back("123");
+                aStringList.push_back("abcd");
+                aStringList.push_back("hi29");
+
+                aStringList.foldLeft(aResultString, function_concat);
+                assertEqual<string>("123abcdhi29", aResultString);
+
+                aResultString = "----";
+                aStringList.foldLeft(aResultString, function_concat);
+                assertEqual<string>("----123abcdhi29", aResultString);
+            }
+        }
+
+        // Use of function_length on empty list
+        {
+            List<string> aStringList;
+            string aResultString;
+
+            bool anExceptionThrown = false;
+            try {
+                aStringList.foldLeft(aResultString, function_concat);
+            } catch (...) {
+                anExceptionThrown = true;
+            }
+
+            if (anExceptionThrown)
+                throw runtime_error("Exception thrown by Map");
+
+            assertEqual<string>("", aResultString);
+
+            aResultString = "----";
+            try {
+                aStringList.foldLeft(aResultString, function_concat);
+            } catch (...) {
+                anExceptionThrown = true;
+            }
+
+            if (anExceptionThrown)
+                throw runtime_error("Exception thrown by Map");
+
+            assertEqual<string>("----", aResultString);
+        }
+    }
+    catch (exception &iExc) {
+        cout << "FoldLeft exception, Reason : " << iExc.what() << endl;
     }
 }

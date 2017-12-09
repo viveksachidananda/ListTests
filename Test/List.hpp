@@ -2,13 +2,13 @@
 // Created by Vivek on 06-12-2017.
 //
 
-#ifndef TEST_LIST_HPP
-#define TEST_LIST_HPP
+#ifndef LIST_HPP
+#define LIST_HPP
 
 #include <cstddef>
+#include <exception>
 #include <iostream>
 #include <string>
-#include "exception"
 
 namespace exceptions {
     class LLUnsupportedOperationException : public std::exception {
@@ -73,7 +73,7 @@ private:
 public:
 
     // constructors
-    List() : _head(nullptr), _size(0) {}
+    List() : _head(nullptr), _tail(nullptr), _size(0) {}
 
     explicit List(const size_t iSize);
 
@@ -108,7 +108,7 @@ public:
     void map(void (*func)(T &, ReturnListType &), List<ReturnListType> &ioList);
 
     template<typename ReturnListType>
-    ReturnListType foldLeft(ReturnListType &ioReturn, void (*func)(T &, ReturnListType &));
+    void foldLeft(ReturnListType &ioReturn, void (*func)(T &, ReturnListType &));
 
     // capacity:
     size_t size() const { return _size; }
@@ -126,7 +126,7 @@ private:
     void mapUtil(Node *iCurr, void (*func)(T &, ReturnListType &), List<ReturnListType> &ioList);
 
     template<typename ReturnListType>
-    ReturnListType foldLeftUtil(Node *iCurr, void (*func)(T &, ReturnListType &), ReturnListType &iReturnData);
+    void foldLeftUtil(Node *iCurr, void (*func)(T &, ReturnListType &), ReturnListType &iReturnData);
 
     void printUtil(Node* iCurr, std::string& oString);
 
@@ -192,18 +192,18 @@ void List<T>::mapUtil(Node *iCurr, void (*func)(T &, ReturnListType &), List<Ret
 
 template<typename T>
 template<typename ReturnListType>
-ReturnListType List<T>::foldLeft(ReturnListType &ioReturn, void (*func)(T &, ReturnListType &)) {
+void List<T>::foldLeft(ReturnListType &ioReturn, void (*func)(T &, ReturnListType &)) {
     if (_head == nullptr)
-        return ioReturn;
+        return;
 
     return foldLeftUtil(_head, func, ioReturn);
 }
 
 template<typename T>
 template<typename ReturnListType>
-ReturnListType List<T>::foldLeftUtil(Node *iCurr, void (*func)(T &, ReturnListType &), ReturnListType &iReturnData) {
+void List<T>::foldLeftUtil(Node *iCurr, void (*func)(T &, ReturnListType &), ReturnListType &iReturnData) {
     if (iCurr == nullptr)
-        return iReturnData;
+        return;
 
     func(iCurr->_value, iReturnData);
 
@@ -234,6 +234,10 @@ void List<T>::filter(const BaseFunctor *iPredicate) {
                 aPrevious = aCurrent;
             } else {
                 aPrevious->_link = aCurrent->_link;
+
+                // If the tail is deleted then set the tail to previous
+                if (_tail == aCurrent)
+                    _tail = aPrevious;
 
                 --_size;
                 delete aCurrent;
@@ -347,7 +351,6 @@ void List<T>::push_back(const T &iValue) {
         _tail = _head = aNewNode;
         // Otherwise, insert newNode at end.
     } else {
-        std::cout << "Tail " << _tail->_value << " tail->link : " << _tail->_link << std::endl;
         _tail->_link = aNewNode;
         _tail = aNewNode;
     }
@@ -477,4 +480,4 @@ void List<T>::reverseUtil(Node *iCurr, Node *iPrev, Node **iHead) {
     reverseUtil(next, iCurr, iHead);
 }
 
-#endif //TEST_LIST_HPP
+#endif //LIST_HPP
