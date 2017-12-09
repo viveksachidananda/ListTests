@@ -10,17 +10,19 @@
 #include <string>
 #include "exception"
 
-class LLUnsupportedOperationException : public std::exception {
-    virtual const char *what() const throw() {
-        return "Unsupported operation has been performed";
-    }
-};
+namespace exceptions {
+    class LLUnsupportedOperationException : public std::exception {
+        virtual const char *what() const throw() {
+            return "Unsupported operation has been performed";
+        }
+    };
 
-class LLOutOfRange : public std::exception {
-    virtual const char *what() const throw() {
-        return "Out of range Error";
-    }
-};
+    class LLOutOfRange : public std::exception {
+        virtual const char *what() const throw() {
+            return "Out of range Error";
+        }
+    };
+}
 
 template<typename T>
 class List {
@@ -29,28 +31,30 @@ private:
         Node() : _link(nullptr), _value(T()) {}
 
         explicit Node(const T &val) : _link(nullptr), _value(val) {
-            std::cout << "creating a new node : " << _value << " _link: " << _link << std::endl;
         }
 
         explicit Node(const Node *node) : _link(node->_link), _value(node->_value) {
-            std::cout << "ERRRRR----creating a new node : " << _value << " _link: " << _link << std::endl;
         }
 
         Node *_link;
         T _value;
     };
 
-public:
-
     /*
-     * Acts like a Base functor class that needs to be passed for filter
-     */
+    * Acts like a Base functor class that needs to be passed for filter
+    */
     struct BaseFunctor {
         virtual bool operator()(const Node *iNode) const {
             return true;
         }
     };
 
+    /*
+     * Its a functor which returns true if the mod condition matches
+     * @param iInt: Input integer
+     * @param iModEqual: conditional value the result will be compared with
+     * @return bool of result matches the conditional value
+     */
     struct ModPredicate : public BaseFunctor {
         ModPredicate(const size_t iInt, const size_t iModEqual) : _int(iInt), _modEqual(iModEqual) {
         }
@@ -66,6 +70,8 @@ public:
         size_t _int, _modEqual;
     };
 
+public:
+
     // constructors
     List() : _head(nullptr), _size(0) {}
 
@@ -73,11 +79,13 @@ public:
 
     explicit List(const List &iList);
 
+    // destructor
     ~List();
 
+    // assignment operator overloading
     List<T> &operator=(const List &iList);
 
-    // element access:
+    // accessors:
     const T &at(const size_t iPos) const;
 
     const T &operator[](const size_t iPos) const;
@@ -93,6 +101,7 @@ public:
 
     void reverse();
 
+    // utility functions
     void modFilter(const size_t iInt, const size_t iModEqualTo);
 
     template<typename ReturnListType>
@@ -105,8 +114,7 @@ public:
     size_t size() const { return _size; }
 
     // traversal
-    void print();
-
+    void print(std::string& oString);
 
 private:
 
@@ -120,54 +128,43 @@ private:
     template<typename ReturnListType>
     ReturnListType foldLeftUtil(Node *iCurr, void (*func)(T &, ReturnListType &), ReturnListType &iReturnData);
 
-    Node *_head, *_tail;
-    size_t _size;
+    void printUtil(Node* iCurr, std::string& oString);
+
+    Node *_head, *_tail;    // Stores the pointers to head and tail of the linked list
+    size_t _size;   // size of the linked list
 };
 
 // Class implementation
+
 template<typename T>
-void List<T>::print() {
+void List<T>::print(std::string& oString)
+{
+    oString = "";
 
-    if (_head == nullptr) {
-        std::cout << "empty List Nothing to print" << std::endl;
-        return;
-    }
+    if(_head != nullptr)
+    {
+        Node *aCurr = _head;
 
-    std::string aString = "";
-
-    Node *aCurr = _head;
-
-    while (aCurr != nullptr) {
-        aString.append(std::to_string(aCurr->_value).append(","));
-        aCurr = aCurr->_link;
-    }
-
-    aString.pop_back();
-    std::cout << "List size : " << _size << std::endl;
-    std::cout << "Contents of List : " << aString << std::endl;
+        printUtil(aCurr, oString);
+        oString.pop_back();
+    } else
+        oString = "Empty List";
 }
 
-template<>
-void List<std::string>::print() {
-
-    if (_head == nullptr) {
-        std::cout << "empty List Nothing to print" << std::endl;
+template<typename T>
+void List<T>::printUtil(Node* iCurr, std::string& oString)
+{
+    // Base case
+    if (iCurr == NULL)
         return;
-    }
 
-    std::string aString;
+    std::stringstream aTemp;
+    aTemp << iCurr->_value;
 
-    Node *aCurr = _head;
+    oString.append(aTemp.str());
+    oString.append(",");
 
-    while (aCurr != nullptr) {
-        aString.append(aCurr->_value);
-        aString.append(",");
-        aCurr = aCurr->_link;
-    }
-
-    aString.pop_back();
-    std::cout << "List size : " << _size << std::endl;
-    std::cout << "Contents of List : " << aString << std::endl;
+    printUtil(iCurr->_link, oString);
 }
 
 template<typename T>
@@ -226,11 +223,19 @@ void List<T>::filter(const BaseFunctor *iPredicate) {
         if (!iPredicate->operator()(aCurrent)) {
             if (aCurrent == _head) {
                 _head = aCurrent->_link;
+
+                // If there is only one item then set the tail to head->next(NULLPTR)
+                if (_tail == aCurrent)
+                    _tail = aCurrent->_link;
+
+                --_size;
                 delete aCurrent;
                 aCurrent = _head;
                 aPrevious = aCurrent;
             } else {
                 aPrevious->_link = aCurrent->_link;
+
+                --_size;
                 delete aCurrent;
                 aCurrent = aPrevious->_link;
             }
@@ -241,13 +246,36 @@ void List<T>::filter(const BaseFunctor *iPredicate) {
     }
 }
 
+/*
+ * Its a functor which returns true if the mod condition matches
+ * @param iInt: Input integer
+ * @param iModEqual: conditional value the result will be compared with
+ * @return bool of result matches the conditional value
+ *
+ * Generic implementation, does not support String, Characters, non-integer data types
+ */
 template<typename T>
 void List<T>::modFilter(const size_t iInt, const size_t iModEqualTo) {
-    throw LLUnsupportedOperationException();
+    throw exceptions::LLUnsupportedOperationException();
+}
+
+/*
+ * Its a functor which returns true if the mod condition matches
+ * @param iInt: Input integer
+ * @param iModEqual: conditional value the result will be compared with
+ * @return bool of result matches the conditional value
+ *
+ * Template fully Specialized for Integer(size_t)
+ */
+template<>
+void List<size_t>::modFilter(const size_t iInt, const size_t iModEqualTo) {
+    ModPredicate aModPredicate(iInt, iModEqualTo);
+
+    filter(&aModPredicate);
 }
 
 template<>
-void List<size_t>::modFilter(const size_t iInt, const size_t iModEqualTo) {
+void List<int>::modFilter(const size_t iInt, const size_t iModEqualTo) {
     ModPredicate aModPredicate(iInt, iModEqualTo);
 
     filter(&aModPredicate);
@@ -296,7 +324,7 @@ template<typename T>
 const T &List<T>::at(const size_t iPos) const {
     Node *aNodePtr = _head;
     if (iPos < 0 || iPos >= this->size()) {
-        throw LLOutOfRange();
+        throw exceptions::LLOutOfRange();
     } else {
 
         for (size_t i = 0; i < iPos; i++) {
@@ -355,7 +383,7 @@ void List<T>::pop_back() {
 template<typename T>
 void List<T>::insert(const size_t iPos, const T &iValue) {
     if (iPos > _size) {
-        throw LLOutOfRange();
+        throw exceptions::LLOutOfRange();
     }
 
     Node *aNewNode = new Node(iValue);
@@ -388,7 +416,7 @@ void List<T>::insert(const size_t iPos, const T &iValue) {
 template<typename T>
 void List<T>::erase(const size_t iPos) {
     if (_size <= iPos || _head == nullptr) {
-        throw LLOutOfRange();
+        throw exceptions::LLOutOfRange();
     }
     Node *aNodePtr = _head;
     Node *aPrevNode = nullptr;
