@@ -13,13 +13,13 @@ using namespace std;
 // private namespace for filter functions
 namespace {
     // Returns the length of the given string
-    void function_length(string &iString, size_t &oData) {
+    void function_length(const string &iString, size_t &oData) {
         oData = 0;
         oData = iString.length();
     }
 
     // Converts the given string to uppercase
-    void function_convert_to_caps(string &iString, string &oData) {
+    void function_convert_to_caps(const string &iString, string &oData) {
         oData = "";
 
         for (int i = 0; i < iString.size(); i++) {
@@ -27,11 +27,11 @@ namespace {
         }
     };
 
-    void function_concat(string &iData, string &ioData) {
+    void function_concat(const string &iData, string &ioData) {
         ioData += iData;
     }
 
-    void function_add_length(string &iData, size_t &ioData) {
+    void function_add_length(const string &iData, size_t &ioData) {
         ioData += iData.length();
     }
 

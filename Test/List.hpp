@@ -105,10 +105,10 @@ public:
     void modFilter(const size_t iInt, const size_t iModEqualTo);
 
     template<typename ReturnListType>
-    void map(void (*func)(T &, ReturnListType &), List<ReturnListType> &ioList);
+    void map(void (*func)(const T &, ReturnListType &), List<ReturnListType> &ioList) const;
 
     template<typename ReturnListType>
-    void foldLeft(ReturnListType &ioReturn, void (*func)(T &, ReturnListType &));
+    void foldLeft(ReturnListType &ioReturn, void (*func)(const T &, ReturnListType &)) const;
 
     // capacity:
     size_t size() const { return _size; }
@@ -123,10 +123,10 @@ private:
     void reverseUtil(Node *iCurr, Node *iPrev, Node **iHead);
 
     template<typename ReturnListType>
-    void mapUtil(Node *iCurr, void (*func)(T &, ReturnListType &), List<ReturnListType> &ioList);
+    void mapUtil(Node *iCurr, void (*func)(const T &, ReturnListType &), List<ReturnListType> &ioList) const;
 
     template<typename ReturnListType>
-    void foldLeftUtil(Node *iCurr, void (*func)(T &, ReturnListType &), ReturnListType &iReturnData);
+    void foldLeftUtil(Node *iCurr, void (*func)(const T &, ReturnListType &), ReturnListType &iReturnData) const;
 
     void printUtil(Node* iCurr, std::string& oString);
 
@@ -169,7 +169,7 @@ void List<T>::printUtil(Node* iCurr, std::string& oString)
 
 template<typename T>
 template<typename ReturnListType>
-void List<T>::map(void (*func)(T &, ReturnListType &), List<ReturnListType> &ioList) {
+void List<T>::map(void (*func)(const T &, ReturnListType &), List<ReturnListType> &ioList) const{
     if (_head == nullptr)
         return;
 
@@ -179,7 +179,7 @@ void List<T>::map(void (*func)(T &, ReturnListType &), List<ReturnListType> &ioL
 
 template<typename T>
 template<typename ReturnListType>
-void List<T>::mapUtil(Node *iCurr, void (*func)(T &, ReturnListType &), List<ReturnListType> &ioList) {
+void List<T>::mapUtil(Node *iCurr, void (*func)(const T &, ReturnListType &), List<ReturnListType> &ioList) const{
     if (iCurr == nullptr)
         return;
 
@@ -192,7 +192,7 @@ void List<T>::mapUtil(Node *iCurr, void (*func)(T &, ReturnListType &), List<Ret
 
 template<typename T>
 template<typename ReturnListType>
-void List<T>::foldLeft(ReturnListType &ioReturn, void (*func)(T &, ReturnListType &)) {
+void List<T>::foldLeft(ReturnListType &ioReturn, void (*func)(const T &, ReturnListType &)) const{
     if (_head == nullptr)
         return;
 
@@ -201,7 +201,7 @@ void List<T>::foldLeft(ReturnListType &ioReturn, void (*func)(T &, ReturnListTyp
 
 template<typename T>
 template<typename ReturnListType>
-void List<T>::foldLeftUtil(Node *iCurr, void (*func)(T &, ReturnListType &), ReturnListType &iReturnData) {
+void List<T>::foldLeftUtil(Node *iCurr, void (*func)(const T &, ReturnListType &), ReturnListType &iReturnData) const{
     if (iCurr == nullptr)
         return;
 
