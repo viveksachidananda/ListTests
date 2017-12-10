@@ -9,7 +9,11 @@
 /cygdrive/e/CodingGame/Test/List.hpp
 cstddef
 -
+exception
+-
 iostream
+-
+string
 -
 
 /cygdrive/e/CodingGame/Test/main.cpp
@@ -20,10 +24,6 @@ iostream
 memory
 -
 regex
--
-string
--
-vector
 -
 List.hpp
 /cygdrive/e/CodingGame/Test/List.hpp
